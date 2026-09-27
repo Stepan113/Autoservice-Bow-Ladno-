@@ -42,14 +42,36 @@
     *Примечание: Откройте файл `.env` и при необходимости заполните/измените переменные (JWT_SECRET, настройки подключения к БД).*
 
 4.  **Сборка и запуск контейнеров**
-    Соберите и запустите проект в фоновом режиме с помощью Docker Compose:
+    Соберите и запустите приложение, PostgreSQL и RabbitMQ одной командой:
     ```bash
     docker compose up --build -d
     ```
 
+    Предварительно собирать JAR не требуется: multi-stage `Dockerfile` запускает
+    Gradle внутри build-контейнера, а в итоговый образ копирует только готовое
+    приложение и Java Runtime.
+
 5.  **Доступ к приложению**
     После успешного запуска Swagger UI с документацией API будет доступен по следующему адресу:
     [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
+
+    Панель RabbitMQ доступна по адресу
+    [http://localhost:15672](http://localhost:15672). Логин и пароль задаются
+    переменными `RABBITMQ_USER` и `RABBITMQ_PASSWORD` в `.env`.
+
+### Локальный запуск приложения из IDE
+
+Если приложение запускается из IDE или через `./gradlew bootRun`, поднимите
+только инфраструктуру:
+
+```bash
+docker compose up -d postgres rabbitmq
+./gradlew bootRun
+```
+
+В этом режиме приложение подключается к PostgreSQL и RabbitMQ через
+`localhost`. Значения по умолчанию находятся в `application.yaml`; при
+необходимости их можно переопределить переменными окружения Spring Boot.
 
 ### Остановка проекта
 
