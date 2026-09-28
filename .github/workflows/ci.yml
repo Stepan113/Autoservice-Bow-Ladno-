@@ -5,6 +5,14 @@ on:
   pull_request:
 
 jobs:
+  commitlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: wagoid/commitlint-github-action@v6
+
   test-and-build:
     runs-on: ubuntu-latest
     steps:
@@ -18,8 +26,32 @@ jobs:
           java-version: 17
           cache: gradle
 
-      - name: Test
-        run: ./gradlew test
+      # Формирование отчетов от чекстайла
+      - name: Checkstyle
+        run: ./gradlew checkAll
 
+      - name: Upload checkstyle report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: checkstyle-report
+          path: reports/checkstyle
+
+      # Запуск тестов и формирование отчета от jacoco
+      - name: Test
+        run: ./gradlew test jacocoTestReport
+
+      - name: Summarize tests results
+        uses: jeantessier/test-summary-action@v1
+        if: ${{ always() }}
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: reports/jacoco/test
+
+      # Сборка самого проекта через докер
       - name: Build Docker image
         run: docker build -t kpoproject:${{ github.sha }} .

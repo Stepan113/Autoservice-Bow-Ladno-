@@ -8,6 +8,7 @@ build/
 # Custom gitignore
 gradle.properties
 .env
+reports
 
 ### STS ###
 .apt_generated
