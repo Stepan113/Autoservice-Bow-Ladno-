@@ -3,6 +3,7 @@
 .gradle
 .idea
 build
+reports
 config/reports
 .env
 *.iml

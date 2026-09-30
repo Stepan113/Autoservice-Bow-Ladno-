@@ -13,6 +13,7 @@ plugins {
     id 'org.springframework.boot' version '4.1.1'
     id 'io.spring.dependency-management' version '1.1.7'
     id 'checkstyle'
+    id 'jacoco'
     id 'org.liquibase.gradle' version '3.1.0'
 }
 
@@ -24,6 +25,11 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
     }
+}
+
+jacoco {
+    toolVersion = "0.8.12"
+    reportsDirectory = layout.projectDirectory.dir("reports/jacoco")
 }
 
 ext {
@@ -42,24 +48,33 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-h2console'
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-liquibase'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.0'
     implementation 'org.liquibase:liquibase-core'
+    implementation 'io.jsonwebtoken:jjwt-api:0.13.0'
+    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
 
     compileOnly 'org.projectlombok:lombok'
 
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'org.postgresql:postgresql'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.13.0'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.13.0'
 
     annotationProcessor 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-amqp-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-liquibase-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-security-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+
 
     testCompileOnly 'org.projectlombok:lombok'
 
@@ -85,7 +100,7 @@ liquibase {
             url project.findProperty('db.url')
             username project.findProperty('db.username')
             password project.findProperty('db.password')
-            referenceUrl "hibernate:spring:org.lab.liqubasetreaning?dialect=org.hibernate.dialect.H2Dialect"
+            referenceUrl "hibernate:spring:org.lab.kpoproject.entity?dialect=org.hibernate.dialect.PostgreSQLDialect"
             logLevel project.findProperty('db.logLevel')
         }
     }
@@ -111,7 +126,7 @@ diffChangelog.dependsOn compileJava
 checkstyle {
     toolVersion = '12.1.1'
     configFile = file('config/checkstyle/checkstyle.xml')
-    reportsDir = file('config/reports/')
+    reportsDir = file('reports/checkstyle')
     maxErrors = 0
     maxWarnings = 0
 }
@@ -127,7 +142,27 @@ tasks.register('checkAll') {
     dependsOn(tasks.named("checkstyleMain"), tasks.named("checkstyleTest"))
 }
 
+// Блок для jacoco
+jacocoTestReport {
+    dependsOn test
+    reports {
+        html.required = true
+        csv.required = false
+    }
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.80
+            }
+        }
+    }
+}
+
 tasks.named('test') {
     useJUnitPlatform()
+    finalizedBy jacocoTestReport
 }
 
