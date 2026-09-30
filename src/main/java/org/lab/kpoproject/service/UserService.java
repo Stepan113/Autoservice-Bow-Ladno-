@@ -7,6 +7,7 @@ import org.lab.kpoproject.dto.SignInRequest;
 import org.lab.kpoproject.dto.SignUpRequest;
 import org.lab.kpoproject.entity.TypeToken;
 import org.lab.kpoproject.entity.User;
+import org.lab.kpoproject.exception.TokenIsntValidException;
 import org.lab.kpoproject.exception.TokenNotEqualsException;
 import org.lab.kpoproject.mapper.UserMapper;
 import org.lab.kpoproject.repository.UserRepository;
@@ -80,6 +81,16 @@ public class UserService {
     }
 
     public ResponseToken reload(final String refreshToken) {
+        final TypeToken typeToken;
+        try {
+            typeToken = TypeToken.valueOf(utils.getTypeToken(refreshToken));
+        } catch (IllegalArgumentException e) {
+            throw new TokenIsntValidException("Unknown token type");
+        }
+
+        if (typeToken != TypeToken.REFRESH) {
+            throw new TokenIsntValidException("Token is not a refresh token");
+        }
         final String email = utils.getEmail(refreshToken);
         final String tokenFromRedis = redisUtils.get(email);
         if (tokenFromRedis.equals(refreshToken)) {

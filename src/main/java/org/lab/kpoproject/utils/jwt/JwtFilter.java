@@ -2,6 +2,7 @@ package org.lab.kpoproject.utils.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -42,8 +44,12 @@ public class JwtFilter extends OncePerRequestFilter {
         try {
             final String token = getToken(request);
             if (token != null && utils.validateToken(token)) {
-                final TypeToken typeToken = TypeToken.valueOf(
-                        utils.getTypeToken(token));
+                final TypeToken typeToken;
+                try {
+                    typeToken = TypeToken.valueOf(utils.getTypeToken(token));
+                } catch (IllegalArgumentException e) {
+                    throw new TokenIsntValidException("Unknown token type");
+                }
                 switch (typeToken) {
                     case REFRESH -> throw new TokenIsntValidException(
                             "Refresh token is not a access token");
@@ -67,14 +73,11 @@ public class JwtFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
 
         } catch (ExpiredJwtException e) {
-            final ResponseMessage responseMessage = new ResponseMessage();
-            responseMessage.setMessage("Token expired");
-            responseMessage.setStatus(HttpStatus.UNAUTHORIZED);
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().write(
-                    new ObjectMapper().writeValueAsString(responseMessage));
+            writeUnauthorized(response, "Token expired");
+        } catch (JwtException |
+                 TokenIsntValidException |
+                 UsernameNotFoundException e) {
+            writeUnauthorized(response, "Token is invalid");
         }
 
     }
@@ -85,5 +88,25 @@ public class JwtFilter extends OncePerRequestFilter {
             return token.substring(7);
         }
         return null;
+    }
+
+    private void writeUnauthorized(
+            final HttpServletResponse response,
+            final String message
+    ) throws IOException {
+        final ResponseMessage responseMessage =
+                new ResponseMessage();
+
+        responseMessage.setMessage(message);
+        responseMessage.setStatus(HttpStatus.UNAUTHORIZED);
+
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        response.getWriter().write(
+                new ObjectMapper()
+                        .writeValueAsString(responseMessage)
+        );
     }
 }

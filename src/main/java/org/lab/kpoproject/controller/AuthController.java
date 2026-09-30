@@ -8,6 +8,7 @@ import org.lab.kpoproject.service.UserService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -20,26 +21,29 @@ public class AuthController {
     }
 
     @PostMapping("/registration")
-    public boolean registration(@Validated final SignUpRequest request) {
+    public boolean registration(
+            @Validated
+            @RequestBody final SignUpRequest request) {
         return service.registration(request);
     }
 
     @PostMapping("/login")
-    public ResponseToken login(@Validated final SignInRequest request,
-                               final HttpServletResponse response) {
+    public String login(@Validated
+                        @RequestBody final SignInRequest request,
+                        final HttpServletResponse response) {
         final ResponseToken token = service.login(request);
         response.addCookie(token.getCookie());
-        return token;
+        return token.getAccessToken();
     }
 
     @PostMapping("/reload")
-    public ResponseToken reload(
+    public String reload(
             @CookieValue("refresh_token") final String refreshToken,
             final HttpServletResponse response) {
         final ResponseToken token = service
                 .reload(refreshToken);
         response.addCookie(token.getCookie());
-        return token;
+        return token.getAccessToken();
     }
 
 }

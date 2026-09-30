@@ -1,13 +1,19 @@
 package org.lab.kpoproject.utils.redis;
 
 import org.lab.kpoproject.exception.KeyNotFoundException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
+
+import java.time.Duration;
 
 @Component
 public class RedisUtils {
     private static final String PREFIX = "refresh_token: ";
     private final StringRedisTemplate template;
+
+    @Value("${jwt.refreshTokenLifetime}")
+    private int ttl;
 
     public RedisUtils(final StringRedisTemplate template) {
         this.template = template;
@@ -19,7 +25,7 @@ public class RedisUtils {
             return false;
         }
 
-        template.opsForValue().set(key, token);
+        template.opsForValue().set(key, token, Duration.ofMinutes(ttl));
         return true;
     }
 
