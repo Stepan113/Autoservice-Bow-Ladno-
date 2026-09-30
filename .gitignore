@@ -9,6 +9,7 @@ build/
 gradle.properties
 .env
 reports
+testdb.mv.db
 
 ### STS ###
 .apt_generated

@@ -100,7 +100,7 @@ liquibase {
             url project.findProperty('db.url')
             username project.findProperty('db.username')
             password project.findProperty('db.password')
-            referenceUrl "hibernate:spring:org.lab.liqubasetreaning?dialect=org.hibernate.dialect.H2Dialect"
+            referenceUrl "hibernate:spring:org.lab.kpoproject.entity?dialect=org.hibernate.dialect.PostgreSQLDialect"
             logLevel project.findProperty('db.logLevel')
         }
     }
