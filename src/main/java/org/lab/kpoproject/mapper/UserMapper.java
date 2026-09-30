@@ -1,7 +1,7 @@
 package org.lab.kpoproject.mapper;
 
-import org.lab.kpoproject.dto.SignInRequest;
-import org.lab.kpoproject.dto.SignUpRequest;
+import org.lab.kpoproject.dto.auth.SignInRequest;
+import org.lab.kpoproject.dto.auth.SignUpRequest;
 import org.lab.kpoproject.dto.UserResponse;
 import org.lab.kpoproject.entity.User;
 import org.mapstruct.Mapper;

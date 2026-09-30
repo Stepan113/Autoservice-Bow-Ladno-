@@ -2,9 +2,9 @@ package org.lab.kpoproject.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.Cookie;
-import org.lab.kpoproject.dto.ResponseToken;
-import org.lab.kpoproject.dto.SignInRequest;
-import org.lab.kpoproject.dto.SignUpRequest;
+import org.lab.kpoproject.dto.auth.ResponseToken;
+import org.lab.kpoproject.dto.auth.SignInRequest;
+import org.lab.kpoproject.dto.auth.SignUpRequest;
 import org.lab.kpoproject.entity.TypeToken;
 import org.lab.kpoproject.entity.User;
 import org.lab.kpoproject.exception.TokenIsntValidException;
