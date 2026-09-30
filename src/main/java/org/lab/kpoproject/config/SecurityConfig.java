@@ -53,7 +53,8 @@ public class SecurityConfig {
                                         "/registration",
                                         "/reload",
                                         "/test/**",
-                                        "/h2-console/**"
+                                        "/h2-console/**",
+                                        "/swagger-ui/**"
                                 ).permitAll()
                                 .requestMatchers(Constant.API + "/**")
                                 .hasAnyRole(Role.ADMIN.name(), Role.USER.name())

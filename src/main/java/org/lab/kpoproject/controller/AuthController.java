@@ -1,9 +1,9 @@
 package org.lab.kpoproject.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
-import org.lab.kpoproject.dto.ResponseToken;
-import org.lab.kpoproject.dto.SignInRequest;
-import org.lab.kpoproject.dto.SignUpRequest;
+import org.lab.kpoproject.dto.auth.ResponseToken;
+import org.lab.kpoproject.dto.auth.SignInRequest;
+import org.lab.kpoproject.dto.auth.SignUpRequest;
 import org.lab.kpoproject.service.UserService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CookieValue;

@@ -1,4 +1,4 @@
-package org.lab.kpoproject.dto;
+package org.lab.kpoproject.dto.auth;
 
 import jakarta.servlet.http.Cookie;
 import lombok.AllArgsConstructor;
