@@ -15,6 +15,20 @@ spring:
       port: ${SPRING_REDIS_PORT:6379}
       host: ${SPRING_REDIS_HOST:localhost}
       database: ${SPRING_REDIS_DATABASE:0}
+  mail:
+    host: ${SPRING_MAIL_HOST:smtp.mail.ru}
+    username: ${SPRING_MAIL_USERNAME}
+    password: ${SPRING_MAIL_PASSWORD}
+    port: ${SPRING_MAIL_PORT:465}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
 
   jpa:
     hibernate:

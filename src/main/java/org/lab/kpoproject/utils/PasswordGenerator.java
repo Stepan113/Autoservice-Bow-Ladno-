@@ -12,8 +12,8 @@ public class PasswordGenerator {
     private static final String UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static final String DIGITS = "0123456789";
     private static final String SPECIAL = "!@#$%^&*";
-    private static final int minLength = 8;
-    private static final int maxLength = 16;
+    private static final int MINLENGTH = 8;
+    private static final int MAXLENGTH = 16;
     private static final String ALL = LOWER + UPPER + DIGITS + SPECIAL;
     private static final SecureRandom RND = new SecureRandom();
 
@@ -21,10 +21,10 @@ public class PasswordGenerator {
     private PasswordEncoder encoder;
 
     public String generate() {
-        final StringBuilder sb = new StringBuilder(maxLength);
+        final StringBuilder sb = new StringBuilder(MAXLENGTH);
         sb.append(pick(LOWER)).append(pick(UPPER))
                 .append(pick(DIGITS)).append(pick(SPECIAL));
-        for (int i = minLength; i < maxLength; i++) {
+        for (int i = MINLENGTH; i < MAXLENGTH; i++) {
             sb.append(pick(ALL));
         }
         return shuffle(sb.toString());
